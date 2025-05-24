@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Test</title>
+
+<script>
+const audioBase = 'audio/';
+const queueList = [];  // คิวรอเล่น
+let isPlaying = false;
+
+function enqueueQueue(queueNumber) {
+  queueList.push(queueNumber);  // เพิ่มเข้าคิว
+  if (!isPlaying) {
+    playNextInQueue();
+  }
+}
+
+function playNextInQueue() {
+  if (queueList.length === 0) {
+    isPlaying = false;
+    return;
+  }
+
+  const queueNumber = queueList.shift();
+  isPlaying = true;
+
+  const path_file = document.getElementById('languageSelect').value === 'eng' ? 'eng_2/' : '';
+  const nation = document.getElementById('languageSelect').value === 'eng' ? 'eng_' : 'thai_';
+  const files = [`${audioBase}${path_file}${nation}start.mp3`];
+  for (const digit of queueNumber) {
+    files.push(`${audioBase}${path_file}${nation}${digit}.mp3`);
+  }
+  if(files.length > 0 && nation === 'thai_') {
+    files.push(`${audioBase}${path_file}${nation}end.mp3`);
+  }
+  let index = 0;
+  const audio = new Audio();
+  const speed = parseFloat(document.getElementById('speedSelect').value) || 1.04; // ค่า speed จาก dropdown
+
+  const playNextAudio = () => {
+    if (index < files.length) {
+      audio.src = files[index++];
+      audio.playbackRate = speed;  // ตั้งค่าความเร็วตรงนี้
+      audio.play().then(() => {
+        console.log('🔊 Playing at speed:', speed, audio.src);
+      }).catch(err => {
+        console.error('❌ Error:', err);
+        playNextAudio();
+      });
+    } else {
+      audio.removeEventListener('ended', playNextAudio);
+      playNextInQueue();
+    }
+  };
+
+  audio.addEventListener('ended', playNextAudio);
+  playNextAudio();
+}
+
+</script>
+
+</head>
+<body>
+    <h1>Welcome to the Quiz Test</h1>
+    <p>This is a basic HTML template.</p>
+    <label>ความเร็วเสียง:
+  <select id="speedSelect">
+    <option value="0.75">ช้า</option>
+    <option value="1.0" selected>ปกติ</option>
+    <option value="1.15">เร็ว</option>
+    <option value="1.5">เร็วมาก</option>
+  </select>
+</label>
+
+ <label>ภาษา:
+  <select id="languageSelect">
+    <option value="thai" selected>ไทย</option>
+    <option value="eng">อังกฤษ</option>
+  </select>
+</label>
+
+<input type="number" id="queueInput" placeholder="Enter queue number (0758)" />
+<button onclick="enqueueQueue(document.getElementById('queueInput').value)">เล่นคิว</button>
+<button onclick="enqueueQueue('0758')">เล่นคิว 0758</button>
+<button onclick="enqueueQueue('1234')">เล่นคิว 1234</button>
+
+
+</body>
+</html>
