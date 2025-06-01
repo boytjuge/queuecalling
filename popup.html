@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Call Queue Demo</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 400px;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .log {
+      margin-top: 2rem;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      height: 200px;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>จำลองระบบ Call Queue</h1>
+  <p>ระบบจะสุ่มเรียกคิวเข้าทุก ๆ ไม่กี่วินาที และปิดเองอัตโนมัติ</p>
+
+  <div id="callQueueModal" class="modal">
+    <div class="modal-content">
+      <h2>คุณอยู่ในคิวสายเรียกเข้า</h2>
+      <p>กรุณารอสักครู่...</p>
+    </div>
+  </div>
+
+  <div class="log" id="log"></div>
+
+  <script>
+    const modal = document.getElementById('callQueueModal');
+    const log = document.getElementById('log');
+
+    function showModal() {
+      modal.style.display = 'flex';
+      logMessage("🎧 เข้าคิว...");
+    }
+
+    function hideModal() {
+      modal.style.display = 'none';
+      logMessage("✅ คิวเสร็จสิ้น ปิดหน้าต่างแล้ว");
+    }
+
+    function logMessage(message) {
+      const now = new Date().toLocaleTimeString();
+      const entry = document.createElement("div");
+      entry.textContent = `[${now}] ${message}`;
+      log.appendChild(entry);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    function simulateCallQueue() {
+      const randomTimeToNextQueue = Math.floor(Math.random() * 5000) + 3000; // 3-8 วินาที
+
+      setTimeout(() => {
+        showModal();
+
+        const randomCallDuration = Math.floor(Math.random() * 3000) + 3000; // 3-6 วินาที
+
+        setTimeout(() => {
+          hideModal();
+          simulateCallQueue(); // เรียกต่อเนื่อง
+        }, randomCallDuration);
+
+      }, randomTimeToNextQueue);
+    }
+
+    // เริ่มการจำลองคิว
+    simulateCallQueue();
+  </script>
+
+</body>
+</html>

@@ -36,12 +36,15 @@ function playNextInQueue() {
   }
   let index = 0;
   const audio = new Audio();
-  const speed = parseFloat(document.getElementById('speedSelect').value) || 1.04; // ค่า speed จาก dropdown
+  let speed = parseFloat(document.getElementById('speedSelect').value) || 1; // ค่า speed จาก dropdown
 
   const playNextAudio = () => {
     if (index < files.length) {
+      if (index  !== 0) {
+        speed = 1.28;
+      }
       audio.src = files[index++];
-      audio.playbackRate = speed;  // ตั้งค่าความเร็วตรงนี้
+      audio.playbackRate = speed ;  // ตั้งค่าความเร็วตรงนี้
       audio.play().then(() => {
         console.log('🔊 Playing at speed:', speed, audio.src);
       }).catch(err => {
